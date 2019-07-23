@@ -7,7 +7,7 @@ This tutorial shows you how to create a Kafka-consumer and -producer using [kafk
 What you'll learn
 * How to create a Kafka producer that produce data from a Kafka-broker
 * How to create a Kafka consumer that reads data from a Kafka-broker
-* How to create a Kafka streams application that performs computations on input from one topic and 
+* How to create a Kafka streams application that transforms input from one topic and 
  sends output to one or more other topics
 
 Positive
@@ -56,8 +56,11 @@ docker run --rm -it --net=host landoop/fast-data-dev kafka-topics --zookeeper lo
 
 ### Assignment
 
-1. Create a kafka producer which produces messages to the 'dice-rolls' topic
-    - You can either create your own producer class from scratch or base it on the example below
+1. Create a kafka producer that produces messages to the 'dice-rolls' topic
+    - You can either create your own producer class from scratch or base it on the example below. The producer:
+        - shall use the DiceRoll and DiceCount avro schemas
+        - can use the rollDices() method below for generating the dice rolls
+        - shall produce a new message to the 'dice-rolls' topic for each new dice roll 
     - If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollProducer)
 
 ```@java
@@ -108,7 +111,7 @@ public class DiceRollProducer {
 }
 ```
 
-2. Create a kafka consumer which consumes the 'dice-rolls' topic and prints each message received to console.
+2. Create a kafka consumer that reads the 'dice-rolls' topic and prints each received message (key and value) to console.
     - You can either create your own consumer class from scratch or base it on the example below
     - If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollConsumer)
     
