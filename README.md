@@ -16,7 +16,7 @@ Positive
 ### Prerequisites
 
 * Internet connectivity
-* Java SKD installed - see [https://www.oracle.com/technetwork/java/javase/downloads/index.html](https://www.oracle.com/technetwork/java/javase/downloads/index.html) for instructions.
+* Java SDK installed - see [https://www.oracle.com/technetwork/java/javase/downloads/index.html](https://www.oracle.com/technetwork/java/javase/downloads/index.html) for instructions.
 * Docker - see [https://www.docker.com/get-started](https://www.docker.com/get-started) for instructions. NB! Docker on Windows VDI requires virtualization, see [Docker on Windows VDI requires virtualization](#Docker-on-Windows-VDI-requires-virtualization)
 * IntelliJ IDEA installed. Choose the Community version from the download link [IntelliJ Idea](https://www.jetbrains.com/idea/download)
 * Git installed - see [https://git-scm.com/](https://git-scm.com/) for instructions.
