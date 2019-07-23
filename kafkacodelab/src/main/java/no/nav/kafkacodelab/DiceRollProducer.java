@@ -26,7 +26,7 @@ public class DiceRollProducer {
         try (KafkaProducer<DiceCount, DiceRoll> producer = new KafkaProducer<>(getConfig())) {
                 for (int roll = 0; roll < numberOfRolls; roll++) {
                     AbstractMap.SimpleEntry<DiceCount, DiceRoll> diceRoll = rollDices();
-                    producer.send(new ProducerRecord<>("roll-dices-test", diceRoll.getKey(), diceRoll.getValue()));
+                    producer.send(new ProducerRecord<>("dice-rolls", diceRoll.getKey(), diceRoll.getValue()));
             }
         }
     }
