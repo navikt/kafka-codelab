@@ -81,14 +81,14 @@ public class DiceRollProducer {
     private AbstractMap.SimpleEntry<DiceCount, DiceRoll> rollDices() {
         Random r = new Random();
         int count = r.nextInt(5) + 1; // Roll anywhere between 1 and 5 dice
-        List<Integer> dice = roll(r, count);
+        List<Integer> dice = getRollResult(r, count);
         DiceRoll diceRoll = DiceRoll.newBuilder().setCount(count).setDice(dice).build();
         DiceCount diceCount = DiceCount.newBuilder().setCount(count).build();
         LOGGER.info("Rolled {}", diceRoll);
         return new AbstractMap.SimpleEntry<>(diceCount, diceRoll);
     }
 
-    private List<Integer> roll(Random r, int count) {
+    private List<Integer> getRollResult(Random r, int count) {
         List<Integer> dice = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             dice.add(r.nextInt(6) + 1);
@@ -150,8 +150,8 @@ public class DiceRollConsumer {
 
 3. Create a kafka streams application
     - The streams application shall:
-        - create a separate topic for every number of dices rolled (1->5)
-        - create a new topic containing all the true yatzy rolls (all 5 dices with same number)
+        - create a separate topic containing dice rolls for every number of dices rolled (1->5)
+        - create a new topic containing all the true yatzy rolls (5 dices, all dices with same number)
     - You can either create your own kafka stream class from scratch or base it on the example below
     - If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollStreamer)
     - Go to [kafka-streams](https://kafka.apache.org/documentation/streams/) for additional information on kafka streams
