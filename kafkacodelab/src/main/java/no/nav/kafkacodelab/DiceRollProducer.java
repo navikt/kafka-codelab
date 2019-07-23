@@ -8,10 +8,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 public class DiceRollProducer {
     private static final Logger LOGGER = LogManager.getLogger(DiceRollProducer.class);
@@ -26,20 +23,30 @@ public class DiceRollProducer {
     }
 
     private void startRolling(int numberOfRolls) {
-        Random r = new Random();
         try (KafkaProducer<DiceCount, DiceRoll> producer = new KafkaProducer<>(getConfig())) {
-            for (int roll = 0; roll < numberOfRolls; roll++) {
-                int count = r.nextInt(5) + 1; // Roll anywhere between 1 and 5 dice
-                List<Integer> dice = new ArrayList<>();
-                for (int i = 0; i < count; i++) {
-                    dice.add(r.nextInt(6) + 1);
-                }
-                DiceRoll diceRoll = DiceRoll.newBuilder().setCount(count).setDice(dice).build();
-                DiceCount diceCount = DiceCount.newBuilder().setCount(count).build();
-                LOGGER.info("Rolled {}", diceRoll);
-                producer.send(new ProducerRecord<>("rolls", diceCount, diceRoll));
+                for (int roll = 0; roll < numberOfRolls; roll++) {
+                    AbstractMap.SimpleEntry<DiceCount, DiceRoll> diceRoll = rollDices();
+                    producer.send(new ProducerRecord<>("roll-dices-test", diceRoll.getKey(), diceRoll.getValue()));
             }
         }
+    }
+
+    private AbstractMap.SimpleEntry<DiceCount, DiceRoll> rollDices() {
+        Random r = new Random();
+        int count = r.nextInt(5) + 1; // Roll anywhere between 1 and 5 dice
+        List<Integer> dice = getRollResult(r, count);
+        DiceRoll diceRoll = DiceRoll.newBuilder().setCount(count).setDice(dice).build();
+        DiceCount diceCount = DiceCount.newBuilder().setCount(count).build();
+        LOGGER.info("Rolled {}", diceRoll);
+        return new AbstractMap.SimpleEntry<>(diceCount, diceRoll);
+    }
+
+    private List<Integer> getRollResult(Random r, int count) {
+        List<Integer> dice = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            dice.add(r.nextInt(6) + 1);
+        }
+        return dice;
     }
 
     private Properties getConfig() {

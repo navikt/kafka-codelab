@@ -22,7 +22,7 @@ public class DiceRollStreamer {
     public static void main(String[] args) {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KStream<DiceCount, DiceRoll> rolls = streamsBuilder
-                .stream("rolls");
+                .stream("dice-rolls-test");
 
         KStream<DiceCount, DiceRoll>[] counts = rolls.branch((k, v) -> k.getCount() == 5,
                 (k, v) -> k.getCount() == 4,

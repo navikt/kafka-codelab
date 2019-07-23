@@ -33,7 +33,7 @@ public class DiceRollConsumer {
 
     private void start(Consumer<ConsumerRecord<DiceCount, DiceRoll>> onMessage) {
         try(KafkaConsumer<DiceCount, DiceRoll> consumer = new KafkaConsumer<>(getConfig())) {
-            consumer.subscribe(List.of("dice-rolls"));
+            consumer.subscribe(List.of("dice-rolls-test"));
             while(true) {
                 ConsumerRecords<DiceCount, DiceRoll> records = consumer.poll(Duration.ofMillis(1000));
                 records.forEach(onMessage);
