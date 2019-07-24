@@ -1,0 +1,230 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Kafka introduction</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="kafka-introduction"
+                  title="Kafka introduction"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Overview of the tutorial" duration="0">
+        <p>This tutorial shows you how to create a Kafka-consumer and -producer using <a href="http://kafka.apache.org/documentation/#api" target="_blank">kafka-clients</a> java library.</p>
+<p>What you&#39;ll learn</p>
+<ul>
+<li>How to create a Kafka producer that produce data from a Kafka-broker</li>
+<li>How to create a Kafka consumer that reads data from a Kafka-broker</li>
+<li>How to create a Kafka streams application that transforms input from one topic and<br>sends output to one or more other topics</li>
+</ul>
+<aside class="special"><p>This tutorial requires that you are familiar with Java programming language.</p>
+</aside>
+<h2 is-upgraded>Prerequisites</h2>
+<ul>
+<li>Internet connectivity</li>
+<li>Java SDK installed - see <a href="https://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">https://www.oracle.com/technetwork/java/javase/downloads/index.html</a> for instructions.</li>
+<li>Docker - see <a href="https://www.docker.com/get-started" target="_blank">https://www.docker.com/get-started</a> for instructions. NB! Docker on Windows VDI requires virtualization, see Docker on Windows VDI requires virtualization</li>
+<li>IntelliJ IDEA installed. Choose the Community version from the download link <a href="https://www.jetbrains.com/idea/download" target="_blank">IntelliJ Idea</a></li>
+<li>Git installed - see <a href="https://git-scm.com/" target="_blank">https://git-scm.com/</a> for instructions.</li>
+</ul>
+<h3 is-upgraded>Docker on Windows VDI requires virtualization</h3>
+<ul>
+<li>To be able to run the Docker daemon that comes with Docker Desktop (formerly known as Docker For Windows) in Nav&#39;s Windows virtual machine images we need to enable virtualization (Hyper-V) in the image.</li>
+<li>You can ask to have virtualization enabled in the Slack channel #tech_virtualisering. You need to provide the name of the virtual machine, which you will find from within the image &gt; Windows &gt; Kontrollpanel &gt; System og sikkerhet &gt; System. Enabling virtualization requires reboot of the image.</li>
+<li>Verify by opening Windows &gt; Aktiver eller deaktiver Windows-funksjoner, find &#34;Hyper-V&#34; and see that all it&#39;s checkboxes are enabled.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Set up" duration="0">
+        <p>Clone the https://github.com/navikt/kafka-codelab.git repository</p>
+<pre><code>$ git clone https://github.com/navikt/kafka-codelab.git
+</code></pre>
+<p>Go to the kafkacodelabschema project in the kafka-codelab repository and run a clean install from a terminal</p>
+<pre><code>$ mvn clean install
+</code></pre>
+<p>Open a terminal window and run the landoop/fast-data-dev docker image</p>
+<pre><code>$ docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
+       -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=localhost \
+       landoop/fast-data-dev:latest
+</code></pre>
+<p>Optional: Create a ‘dice-rolls&#39; topic</p>
+<pre><code>$ docker run --rm -it --net=host landoop/fast-data-dev kafka-topics --zookeeper localhost:2181 \
+       --create --topic dice-rolls --replication-factor 1 --partitions 1
+</code></pre>
+<p>Optional: Visit http://localhost:3030/kafka-topics-ui/#/ to verify that the ‘dice-rolls&#39; topic was created</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Assignment: Kafka producer" duration="0">
+        <p>Create a kafka producer that produces messages to the ‘dice-rolls&#39; topic</p>
+<ul>
+<li>You can either create your own producer class from scratch or base it on the example below.</li>
+<li>The producer:<br><ul>
+<li>shall use the DiceRoll and DiceCount avro schemas</li>
+<li>can use the rollDices() method below for generating the dice rolls</li>
+<li>shall produce a new message to the ‘dice-rolls&#39; topic for each new dice roll<br></li>
+</ul>
+</li>
+<li>If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollProducer)</li>
+</ul>
+<pre><code>public class DiceRollProducer {
+    private static final Logger LOGGER = LogManager.getLogger(DiceRollProducer.class);
+    public static void main(String[] args) {
+        DiceRollProducer producer = new DiceRollProducer();
+
+        int numOfRolls = 100;
+        if (args.length &gt; 0) {
+            numOfRolls = Integer.parseInt(args[0]);
+        }
+        producer.startRolling(numOfRolls);
+    }
+
+    private void startRolling(int numberOfRolls) {
+        // @todo: Create a kafka producer
+        // @todo: Use the rollDices() method and produce a kafka message for every dice roll to the &#39;dice-rolls&#39; topic
+    }
+
+    private AbstractMap.SimpleEntry&lt;DiceCount, DiceRoll&gt; rollDices() {
+        Random r = new Random();
+        int count = r.nextInt(5) + 1; // Roll anywhere between 1 and 5 dice
+        List&lt;Integer&gt; dice = getRollResult(r, count);
+        DiceRoll diceRoll = DiceRoll.newBuilder().setCount(count).setDice(dice).build();
+        DiceCount diceCount = DiceCount.newBuilder().setCount(count).build();
+        LOGGER.info(&#34;Rolled {}&#34;, diceRoll);
+        return new AbstractMap.SimpleEntry&lt;&gt;(diceCount, diceRoll);
+    }
+
+    private List&lt;Integer&gt; getRollResult(Random r, int count) {
+        List&lt;Integer&gt; dice = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; count; i++) {
+            dice.add(r.nextInt(6) + 1);
+        }
+        return dice;
+    }
+
+    private Properties getConfig() {
+        Properties p = new Properties();
+        p.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, &#34;localhost:9092&#34;);
+        p.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, &#34;http://localhost:8081&#34;);
+        p.put(ProducerConfig.CLIENT_ID_CONFIG, &#34;diceroller-mine&#34;);
+        p.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+        p.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+        return p;
+    }
+}
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Assignment: Kafka consumer" duration="0">
+        <p>Create a kafka consumer that reads the ‘dice-rolls&#39; topic and prints each received message (key and value) to console.</p>
+<ul>
+<li>You can either create your own consumer class from scratch or base it on the example below</li>
+<li>If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollConsumer)<br><br></li>
+</ul>
+<pre><code>public class DiceRollConsumer {
+    private static LongAdder rollsSeen = new LongAdder();
+    private static final Logger LOGGER = LogManager.getLogger(DiceRollConsumer.class);
+    public static void main(String[] args) {
+        DiceRollConsumer consumer = new DiceRollConsumer();
+        consumer.start(consumer.logAndCount());
+
+    }
+
+    private Consumer&lt;ConsumerRecord&lt;DiceCount, DiceRoll&gt;&gt; logAndCount() {
+        return r -&gt;  {
+            LOGGER.info(&#34;key: {} , value: {}&#34;, r.key(), r.value());
+            rollsSeen.increment();
+        };
+    }
+
+    private void start(Consumer&lt;ConsumerRecord&lt;DiceCount, DiceRoll&gt;&gt; onMessage) {
+        // @todo: Create a kafka consumer
+        // @todo: Consume the &#39;roll-dices&#39; topic and print each message received to console
+    }
+
+    private Properties getConfig() {
+        Properties p = new Properties();
+        p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, &#34;localhost:9092&#34;);
+        p.put(ConsumerConfig.GROUP_ID_CONFIG, &#34;my-rolls3&#34;);
+        p.put(KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, &#34;http://localhost:8081&#34;);
+        p.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
+        p.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
+        p.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
+        p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, &#34;earliest&#34;);
+        return p;
+    }
+}
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Assignment: Kafka streams application" duration="0">
+        <p>Create a kafka streams application</p>
+<ul>
+<li>The streams application shall:<br><ul>
+<li>create a separate topic containing dice rolls for every number of dices rolled (1-&gt;5)</li>
+<li>create a new topic containing all the true yatzy rolls (5 dices, all dices with same number)</li>
+</ul>
+</li>
+<li>You can either create your own kafka stream class from scratch or base it on the example below</li>
+<li>If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollStreamer)</li>
+<li>Go to <a href="https://kafka.apache.org/documentation/streams/" target="_blank">kafka-streams</a> for additional information on kafka streams<br><br></li>
+</ul>
+<pre><code>public class DiceRollStreamer {
+    private static final Logger LOGGER = LogManager.getLogger(DiceRollStreamer.class);
+
+    public static void main(String[] args) {
+        // @todo: Create a kafka stream consuming the &#39;roll-dices&#39; topic
+        // @todo: Create five new topics containing dice rolls for the different number of dices rolled (1-&gt;5)
+        // @todo: Create a new topic containing all the true yatzy rolls (5 dices, with all 5 dices with same number)
+    }
+
+    private static Properties getConfig() {
+        Properties p = new Properties();
+        p.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, &#34;localhost:9092&#34;);
+        p.put(KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, &#34;http://localhost:8081&#34;);
+        p.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
+        p.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
+        p.put(StreamsConfig.APPLICATION_ID_CONFIG, &#34;my-application-id&#34;);
+        p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, &#34;earliest&#34;);
+        return p;
+    }
+}
+</code></pre>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

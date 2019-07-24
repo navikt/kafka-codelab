@@ -1,3 +1,7 @@
+id: kafka-introduction
+environments: Java
+status: draft
+
 # Kafka introduction
 
 ## Overview of the tutorial
@@ -29,39 +33,41 @@ Positive
  
 
 ## Set up
-1. Clone the https://github.com/navikt/kafka-codelab.git repository
-```@bash
-git clone https://github.com/navikt/kafka-codelab.git
+Clone the https://github.com/navikt/kafka-codelab.git repository
+```bash
+$ git clone https://github.com/navikt/kafka-codelab.git
 ```
 
-2. Go to the kafkacodelabschema project in the kafka-codelab repository and run a clean install from a terminal
-```@bash
-mvn clean install
+Go to the kafkacodelabschema project in the kafka-codelab repository and run a clean install from a terminal
+```bash
+$ mvn clean install
 ```
 
-3. Open a terminal window and run the landoop/fast-data-dev docker image
-```@bash
-docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
+Open a terminal window and run the landoop/fast-data-dev docker image
+```bash
+$ docker run --rm -p 2181:2181 -p 3030:3030 -p 8081-8083:8081-8083 \
        -p 9581-9585:9581-9585 -p 9092:9092 -e ADV_HOST=localhost \
        landoop/fast-data-dev:latest
 ```
 
-4. Optional: Create a 'dice-rolls' topic
-```@bash
-docker run --rm -it --net=host landoop/fast-data-dev kafka-topics --zookeeper localhost:2181 \
+Optional: Create a 'dice-rolls' topic
+```bash
+$ docker run --rm -it --net=host landoop/fast-data-dev kafka-topics --zookeeper localhost:2181 \
        --create --topic dice-rolls --replication-factor 1 --partitions 1
 ```
 
-5. Optional: Visit http://localhost:3030/kafka-topics-ui/#/ to verify that the 'dice-rolls' topic was created
+Optional: Visit http://localhost:3030/kafka-topics-ui/#/ to verify that the 'dice-rolls' topic was created
 
-### Assignment
+## Assignment: Kafka producer
 
-1. Create a kafka producer that produces messages to the 'dice-rolls' topic
-    - You can either create your own producer class from scratch or base it on the example below. The producer:
-        - shall use the DiceRoll and DiceCount avro schemas
-        - can use the rollDices() method below for generating the dice rolls
-        - shall produce a new message to the 'dice-rolls' topic for each new dice roll 
-    - If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollProducer)
+Create a kafka producer that produces messages to the 'dice-rolls' topic
+* You can either create your own producer class from scratch or base it on the example below. 
+* The producer:
+<!--lint disable no-duplicate-headings-->
+    - shall use the DiceRoll and DiceCount avro schemas
+    - can use the rollDices() method below for generating the dice rolls
+    - shall produce a new message to the 'dice-rolls' topic for each new dice roll    
+* If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollProducer)
 
 ```@java
 public class DiceRollProducer {
@@ -111,9 +117,11 @@ public class DiceRollProducer {
 }
 ```
 
-2. Create a kafka consumer that reads the 'dice-rolls' topic and prints each received message (key and value) to console.
-    - You can either create your own consumer class from scratch or base it on the example below
-    - If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollConsumer)
+## Assignment: Kafka consumer
+
+Create a kafka consumer that reads the 'dice-rolls' topic and prints each received message (key and value) to console.
+* You can either create your own consumer class from scratch or base it on the example below
+* If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollConsumer)
     
 ```@java
 public class DiceRollConsumer {
@@ -151,13 +159,16 @@ public class DiceRollConsumer {
 }
 ```
 
-3. Create a kafka streams application
-    - The streams application shall:
-        - create a separate topic containing dice rolls for every number of dices rolled (1->5)
-        - create a new topic containing all the true yatzy rolls (5 dices, all dices with same number)
-    - You can either create your own kafka stream class from scratch or base it on the example below
-    - If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollStreamer)
-    - Go to [kafka-streams](https://kafka.apache.org/documentation/streams/) for additional information on kafka streams
+## Assignment: Kafka streams application
+
+Create a kafka streams application
+* The streams application shall:
+<!--lint disable no-duplicate-headings-->
+    - create a separate topic containing dice rolls for every number of dices rolled (1->5)
+    - create a new topic containing all the true yatzy rolls (5 dices, all dices with same number)
+* You can either create your own kafka stream class from scratch or base it on the example below
+* If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollStreamer)
+* Go to [kafka-streams](https://kafka.apache.org/documentation/streams/) for additional information on kafka streams
     
 ```@java
 public class DiceRollStreamer {
