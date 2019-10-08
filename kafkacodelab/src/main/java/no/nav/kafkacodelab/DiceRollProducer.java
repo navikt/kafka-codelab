@@ -23,8 +23,10 @@ public class DiceRollProducer {
     }
 
     private void startRolling(int numberOfRolls) {
+        // @done: Create a kafka producer
         try (KafkaProducer<DiceCount, DiceRoll> producer = new KafkaProducer<>(getConfig())) {
             for (int roll = 0; roll < numberOfRolls; roll++) {
+                // @todo: Use the rollDices() method and produce a kafka message for every dice roll to the 'dice-rolls' topic
                 //You probably want to call rollDices() to get a tuple of DiceCount and DiceRoll
                 //Then construct a ProducerRecord(topic, diceCount, diceRoll)
                 //and use producer.send(ProducerRecord) to send the message to kafka

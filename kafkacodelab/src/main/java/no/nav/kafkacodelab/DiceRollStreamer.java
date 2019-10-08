@@ -23,21 +23,21 @@ public class DiceRollStreamer {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KStream<DiceCount, DiceRoll> rolls = streamsBuilder
                 .stream("dice-rolls");
-
-        KStream<DiceCount, DiceRoll>[] counts = rolls.branch((k, v) -> k.getCount() == 5,
-                (k, v) -> k.getCount() == 4,
-                (k, v) -> k.getCount() == 3,
-                (k, v) -> k.getCount() == 2,
-                (k, v) -> k.getCount() == 1);
-
+        // @TODO Use the branch method to create a branch for each diceCount
+        // The branch method accepts a varying number of lambda predicates to select which messages
+        // should go into the branch. So if you only want a branch of rolls with 5 dice you could do
+        // .branch((k, v) -> k.getCount() == 5) which would give you a KStream array of one element
+        // consisting of all messages with count == 5
+        KStream<DiceCount, DiceRoll>[] counts = rolls.branch();
         for (int i = 0; i < counts.length; i++) {
             int diceCount = (5 - i);
             counts[i].to("dice-rolls-" + diceCount);
             counts[i].map((k, r) -> KeyValue.pair(k.getCount(), r.getDice().stream().mapToInt(j -> j).sum()))
                     .to("dice-rolls-sum-" +diceCount, Produced.with(Serdes.Integer(), Serdes.Integer()));
         }
+        // @TODO Use the filter method to pick out yatzy rolls - That is one where all 5 dice are the same
 
-        rolls.filter((k, v) -> k.getCount() == 5).filter((k, v) -> Set.copyOf(v.getDice()).size() == 1).to("dice-yatzy");
+
         KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), getConfig());
         streams.start();
     }
