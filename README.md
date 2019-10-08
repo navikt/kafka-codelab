@@ -67,7 +67,7 @@ Create a kafka producer that produces messages to the 'dice-rolls' topic
     - shall use the DiceRoll and DiceCount avro schemas
     - can use the rollDices() method below for generating the dice rolls
     - shall produce a new message to the 'dice-rolls' topic for each new dice roll    
-* If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollProducer)
+* If you get stuck there is a proposed solution in the solution branch 
 
 ```@java
 public class DiceRollProducer {
@@ -121,7 +121,7 @@ public class DiceRollProducer {
 
 Create a kafka consumer that reads the 'dice-rolls' topic and prints each received message (key and value) to console.
 * You can either create your own consumer class from scratch or base it on the example below
-* If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollConsumer)
+* If you get stuck there is a proposed solution in the solution branch
     
 ```@java
 public class DiceRollConsumer {
@@ -167,7 +167,7 @@ Create a kafka streams application
     - create a separate topic containing dice rolls for every number of dices rolled (1->5)
     - create a new topic containing all the true yatzy rolls (5 dices, all dices with same number)
 * You can either create your own kafka stream class from scratch or base it on the example below
-* If you get stuck there is a proposed solution in the kafkacodelab project (no.nav.kafkacodelab.DiceRollStreamer)
+* If you get stuck there is a proposed solution in the solution branch
 * Go to [kafka-streams](https://kafka.apache.org/documentation/streams/) for additional information on kafka streams
     
 ```@java
