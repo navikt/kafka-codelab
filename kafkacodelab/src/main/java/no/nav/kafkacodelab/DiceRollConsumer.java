@@ -21,7 +21,6 @@ public class DiceRollConsumer {
     public static void main(String[] args) {
         DiceRollConsumer consumer = new DiceRollConsumer();
         consumer.start(consumer.logAndCount());
-
     }
 
     private Consumer<ConsumerRecord<DiceCount, DiceRoll>> logAndCount() {
@@ -34,18 +33,32 @@ public class DiceRollConsumer {
     private void start(Consumer<ConsumerRecord<DiceCount, DiceRoll>> onMessage) {
         try(KafkaConsumer<DiceCount, DiceRoll> consumer = new KafkaConsumer<>(getConfig())) {
             consumer.subscribe(List.of("dice-rolls"));
+
             while(true) {
-                ConsumerRecords<DiceCount, DiceRoll> records = consumer.poll(Duration.ofMillis(1000));
-                records.forEach(onMessage);
-                LOGGER.debug("Seen {} rolls so far", rollsSeen.longValue());
+                //To read messages from a Kafka topic, use the consumer.poll(Duration) method
+                // For instance consumer.poll(Duration.ofMillis(100))
+                // The duration is for how long the consumer waits for a batch to fill up
+                // If the batch is not filled within the duration given, the poll call will return
+                // with the amount of messages received so far
+                // The poll call returns a ConsumerRecords class, which supports normal iteration methods to get at
+                // the ConsumerRecord(s) contained within
             }
         }
+    }
+
+    /**
+     * Kafka uses this to remember how far you've read, so if you want it to be as though Kafka never seen you,
+     * add some randomness to this method
+     * @return
+     */
+    private String getGroupId() {
+        return "my-groupid";
     }
 
     private Properties getConfig() {
         Properties p = new Properties();
         p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        p.put(ConsumerConfig.GROUP_ID_CONFIG, "my-rolls3");
+        p.put(ConsumerConfig.GROUP_ID_CONFIG, getGroupId());
         p.put(KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
         p.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
         p.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);

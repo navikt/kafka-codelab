@@ -4,7 +4,6 @@ import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +11,7 @@ import java.util.*;
 
 public class DiceRollProducer {
     private static final Logger LOGGER = LogManager.getLogger(DiceRollProducer.class);
+
     public static void main(String[] args) {
         DiceRollProducer producer = new DiceRollProducer();
 
@@ -24,9 +24,10 @@ public class DiceRollProducer {
 
     private void startRolling(int numberOfRolls) {
         try (KafkaProducer<DiceCount, DiceRoll> producer = new KafkaProducer<>(getConfig())) {
-                for (int roll = 0; roll < numberOfRolls; roll++) {
-                    AbstractMap.SimpleEntry<DiceCount, DiceRoll> diceRoll = rollDices();
-                    producer.send(new ProducerRecord<>("dice-rolls", diceRoll.getKey(), diceRoll.getValue()));
+            for (int roll = 0; roll < numberOfRolls; roll++) {
+                //You probably want to call rollDices() to get a tuple of DiceCount and DiceRoll
+                //Then construct a ProducerRecord(topic, diceCount, diceRoll)
+                //and use producer.send(ProducerRecord) to send the message to kafka
             }
         }
     }
