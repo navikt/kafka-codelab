@@ -28,3 +28,4 @@ target
 *.iml
 *.ipr
 *.iws
+venv
