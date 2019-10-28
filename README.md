@@ -192,3 +192,16 @@ public class DiceRollStreamer {
     }
 }
 ```
+
+## Python: Kafka Consumer
+
+There is an example Kafka Consumer in the python subfolder.
+To use
+
+```bash
+cd python
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
