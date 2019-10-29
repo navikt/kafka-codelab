@@ -43,9 +43,6 @@ def _decode_avro_message(schema, message):
     return reader.read(decoder)
 
 
-start_timer = time.time()
 for msg in consumer:
     m = _parse_kafka_message(msg)
     print(m)
-
-print(f'read queued messages in {time.time() - start_timer} sec')

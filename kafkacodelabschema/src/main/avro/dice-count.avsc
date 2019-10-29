@@ -1,12 +1,8 @@
 [{
   "type": "record",
   "namespace": "no.nav.kafkacodelab",
-  "name": "DiceRoll",
+  "name": "DiceCount",
   "fields": [
-    {
-      "name": "dice",
-      "type": {"type": "array", "items": "int"}
-    },
     {
       "name": "count",
       "type": "int"
