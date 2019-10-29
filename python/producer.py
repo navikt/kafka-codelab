@@ -39,12 +39,12 @@ def writeMessageWithId(schema_name, message):
 def register_schema(schema_name, schema):
     try:
         postData = {
-            "schema": schema[0]
+            "schema": json.dumps(schema[0])
         }
-        response = requests.post(
-            f'http://localhost:8081/subjects/{schema_name}/versions',
-            data=json.dumps(postData),
-            headers={"Content-Type": "application/vnd.schemaregistry.v1+json"})
+        url = f'http://localhost:8081/subjects/{schema_name}/versions'
+        response = requests.post(url=url,
+                                 data=json.dumps(postData),
+                                 headers={"Content-Type": "application/vnd.schemaregistry.v1+json"})
         response.raise_for_status()
     except Exception as err:
         print(f"Failed to register schema {err}")
@@ -76,7 +76,7 @@ def register(schema_name, schema):
             print("Failed to find or register schema")
 
 
-topicName = "dice-rolls2"
+topicName = "dice-rolls"
 producer = KafkaProducer(bootstrap_servers='localhost:9092')
 keySchema = getSchemaForKey()
 valueSchema = getSchemaForValue()
