@@ -4,6 +4,10 @@ status: draft
 
 # Kafka introduction
 
+## Slides
+
+https://docs.google.com/presentation/d/123s8c2mPIR51vLEDyeympg9Nflei76epfaa11J00nCc/edit?usp=sharing
+
 ## Overview of the tutorial
 
 This tutorial shows you how to create a Kafka-consumer and -producer using [kafka-clients](http://kafka.apache.org/documentation/#api) java library.
