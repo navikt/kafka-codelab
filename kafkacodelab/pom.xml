@@ -8,7 +8,7 @@
     <artifactId>kafka-codelab-producer</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
-        <version.kafka>2.3.0</version.kafka>
+        <version.kafka>2.6.0</version.kafka>
         <version.confluent>5.3.0</version.confluent>
     </properties>
 
